@@ -1,6 +1,4 @@
 ﻿using HarmonyLib;
-using System;
-using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -11,19 +9,12 @@ namespace Debugger
     {
         [HarmonyPrefix]
         [HarmonyPatch("CanTroopGainXp")]
-        public static bool CanTroopGainXp(DefaultPartyTroopUpgradeModel __instance, PartyBase owner, CharacterObject character, ref bool __result)
+        public static bool CanTroopGainXp(PartyBase owner, CharacterObject character, ref bool __result)
         {
-            if (!ReflectionUtils.IsMethodInCallStack(MethodBase.GetCurrentMethod()))
+            if (owner is null || character is null)
             {
-                try
-                {
-                    __result = __instance.CanTroopGainXp(owner, character);
-                }
-                catch (Exception e)
-                {
-                    __result = false;
-                    OutputUtils.DoOutputForException(e);
-                }
+                OutputUtils.DoOutput($"Debugger prevented crashes from an invalid CanTroopGainXp call.", true);
+                __result = false;
                 return false;
             }
             return true;
