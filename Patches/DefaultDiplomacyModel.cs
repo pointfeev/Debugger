@@ -15,6 +15,7 @@ namespace Debugger
             effectiveHero2 = hero2;
             if (hero1 is null || hero2 is null)
             {
+                OutputUtils.DoOutput($"Debugger prevented crashes from a GetHeroesForEffectiveRelation call that was passed null heroes.", true);
                 return false;
             }
             return true;
