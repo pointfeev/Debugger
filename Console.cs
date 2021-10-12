@@ -91,7 +91,7 @@ namespace Debugger
             }
             catch (Exception e)
             {
-                return "Encountered an exception: " + e.ToString() + "\n";
+                return e.ToString() + "\n";
             }
         }
 
@@ -105,12 +105,14 @@ namespace Debugger
                 List<MBEquipmentRoster> equipmentRosters = Game.Current.ObjectManager.GetObjectTypeList<MBEquipmentRoster>().ToList();
                 foreach (Hero hero in heroes)
                 {
+                    if (hero.CharacterObject is null) continue;
                     equipmentRosters.Add((MBEquipmentRoster)typeof(BasicCharacterObject).GetField("_equipmentRoster", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(hero.CharacterObject));
                 }
                 int numEquipmentRemovedFromRosters = 0;
                 int numRostersRemoved = 0;
                 foreach (MBEquipmentRoster equipmentRoster in equipmentRosters)
                 {
+                    if (equipmentRoster is null) continue;
                     int numEquipmentRemovedFromRoster = 0;
                     List<Equipment> equipments = (List<Equipment>)typeof(MBEquipmentRoster).GetField("_equipments", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(equipmentRoster);
                     for (int i = 1; i < equipments.Count; i++)
@@ -181,7 +183,7 @@ namespace Debugger
             }
             catch (Exception e)
             {
-                return "Encountered an exception: " + e.ToString() + "\n";
+                return e.ToString() + "\n";
             }
         }
     }
