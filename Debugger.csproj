@@ -337,6 +337,7 @@
     <Compile Include="Patches\AgentVisuals.cs" />
     <Compile Include="Patches\DefaultDiplomacyModel.cs" />
     <Compile Include="Patches\DefaultTroopUpgradeModel.cs" />
+    <Compile Include="Patches\CaravansCampaignBehavior.cs" />
     <Compile Include="Patches\TroopUpgradeTracker.cs" />
     <Compile Include="Patches\MapSiegePOIVM.cs" />
     <Compile Include="Patches\MapScreen.cs" />
