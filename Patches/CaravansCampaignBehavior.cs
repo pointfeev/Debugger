@@ -11,7 +11,7 @@ namespace Debugger
         [HarmonyPatch("OnMapEventEnded")]
         public static Exception OnMapEventEnded(Exception __exception)
         {
-            return SubModule.Finalizer(__exception);
+            return FinalizeUtils.Finalizer(__exception);
         }
     }
 }
