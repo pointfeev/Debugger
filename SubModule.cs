@@ -20,7 +20,13 @@ namespace Debugger
                 if (!(method is null))
                 {
                     harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(PatchAgentVisuals), "AddSkinArmorWeaponMultiMeshesToEntityPOC")));
-                    InformationManager.DisplayMessage(new InformationMessage("Debugger finalized methods from PocColor mod", Colors.Red, "Debugger"));
+                    InformationManager.DisplayMessage(new InformationMessage("Debugger finalized methods for PocColor", Colors.Red, "Debugger"));
+                }
+                MethodInfo method1 = AccessTools.Method(AccessTools.TypeByName("StartRebellionAction"), "Apply");
+                if (!(method1 is null))
+                {
+                    harmony.Patch(method1, finalizer: new HarmonyMethod(AccessTools.Method(typeof(PatchStartRebellionAction), "Apply")));
+                    InformationManager.DisplayMessage(new InformationMessage("Debugger finalized methods for Diplomacy", Colors.Red, "Debugger"));
                 }
                 harmonyPatched = true;
                 InformationManager.DisplayMessage(new InformationMessage("Debugger initialized", Colors.Red, "Debugger"));
