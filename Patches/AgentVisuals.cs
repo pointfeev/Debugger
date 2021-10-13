@@ -9,14 +9,9 @@ namespace Debugger
     {
         [HarmonyFinalizer]
         [HarmonyPatch("AddSkinArmorWeaponMultiMeshesToEntity")]
-        public static Exception AddSkinArmorWeaponMultiMeshesToEntity()
+        public static Exception AddSkinArmorWeaponMultiMeshesToEntity(Exception __exception)
         {
-            return null;
-        }
-
-        public static Exception AddSkinArmorWeaponMultiMeshesToEntityPOC()
-        {
-            return null;
+            return SubModule.Finalizer(__exception);
         }
     }
 }

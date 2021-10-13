@@ -30,7 +30,7 @@ namespace Debugger
             for (int i = 0; i <= 3; i++)
             {
                 string line = stackTrace.ElementAtOrValue(i, null);
-                if (!(line is null) && !line.Contains("ThrowHelper"))
+                if (!(line is null) && !line.Contains("Debugger") && !line.Contains("ThrowHelper"))
                 {
                     location = line.Substring(line.IndexOf("at"));
                     break;
