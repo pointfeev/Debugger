@@ -333,19 +333,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Utilities\FinalizeUtils.cs" />
-    <Compile Include="Patches\StartRebellionAction.cs" />
-    <Compile Include="Patches\AgentVisuals.cs" />
+    <Compile Include="Methods\Finalizers.cs" />
+    <Compile Include="Methods\Prefixes.cs" />
+    <Compile Include="Patcher.cs" />
     <Compile Include="Patches\DefaultDiplomacyModel.cs" />
     <Compile Include="Patches\DefaultTroopUpgradeModel.cs" />
-    <Compile Include="Patches\CaravansCampaignBehavior.cs" />
-    <Compile Include="Patches\TroopUpgradeTracker.cs" />
     <Compile Include="Patches\MapSiegePOIVM.cs" />
     <Compile Include="Patches\MapScreen.cs" />
     <Compile Include="Utilities\OutputUtils.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Console.cs" />
-    <Compile Include="Patches\BannerVisual.cs" />
     <Compile Include="SubModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

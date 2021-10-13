@@ -4,9 +4,9 @@ using TaleWorlds.MountAndBlade;
 
 namespace Debugger
 {
-    public static class ReflectionUtils
+    internal static class ReflectionUtils
     {
-        public static bool IsMethodInCallStack(MethodBase method)
+        internal static bool IsMethodInCallStack(MethodBase method)
         {
             StackFrame[] stackFrames = new StackTrace().GetFrames();
             // 0 = current method 1 = calling method 2+ = methods we want to check
