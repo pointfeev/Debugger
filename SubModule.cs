@@ -17,7 +17,7 @@ namespace Debugger
                 harmony.PatchAll();
                 FinalizeUtils.FinalizeMethods(harmony, "PocColorModAgentVisualsAddMeshes", "Postfix", "PocColor");
                 FinalizeUtils.FinalizeMethods(harmony, "StartRebellionAction", "Apply", "Diplomacy");
-                FinalizeUtils.FinalizeMethods(harmony, "ScoringModel", "GetScore", "Diplomacy", typeNameExplicit: false);
+                FinalizeUtils.FinalizeMethods(harmony, "HasEnoughScoreCondition", "ApplyCondition", "Diplomacy", typeNameExplicit: false);
                 FinalizeUtils.FinalizeMethods(harmony, "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix", "SupplyLines");
                 FinalizeUtils.DoFinalizedMethodsOutput();
                 harmonyPatched = true;
