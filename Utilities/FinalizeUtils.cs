@@ -103,7 +103,7 @@ namespace Debugger
 
         internal static Exception Finalizer(Exception __exception)
         {
-            OutputUtils.DoOutputForException(__exception);
+            if (!(__exception is null)) OutputUtils.DoOutputForException(__exception);
             return null;
         }
     }
