@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -27,7 +28,7 @@ namespace Debugger
         {
             string[] stackTrace = e.StackTrace.Split('\n');
             string location = string.Empty;
-            for (int i = 0; i <= 3; i++)
+            for (int i = 0; i < stackTrace.Length; i++)
             {
                 string line = stackTrace.ElementAtOrValue(i, null);
                 if (!(line is null) && !line.Contains("System") && !line.Contains("Harmony") && !line.Contains("Debugger"))
