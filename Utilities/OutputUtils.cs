@@ -37,6 +37,7 @@ namespace Debugger
                     break;
                 }
             }
+            if (string.IsNullOrWhiteSpace(location)) return;
             string output = "Debugger prevented crashes " + location;// + message;
             DoOutput(output, allowRepeat);
         }
