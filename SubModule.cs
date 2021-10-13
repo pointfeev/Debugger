@@ -27,6 +27,8 @@ namespace Debugger
                     return true;
                 });
 
+                // need to add the rest of the methods from the Patches folder
+
                 Patcher.FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
                 {
                     result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
