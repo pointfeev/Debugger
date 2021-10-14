@@ -333,9 +333,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patcher.cs" />
     <Compile Include="Methods\Finalizers.cs" />
     <Compile Include="Methods\Prefixes.cs" />
-    <Compile Include="Patcher.cs" />
+    <Compile Include="Utilities\PatchUtils.cs" />
     <Compile Include="Utilities\OutputUtils.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Console.cs" />

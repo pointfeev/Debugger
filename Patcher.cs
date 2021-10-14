@@ -1,136 +1,65 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade.View;
+using static Debugger.PatchUtils;
 
 namespace Debugger
 {
     internal static class Patcher
     {
-        internal delegate bool PatchDelegate(object instance, ref object result, params object[] parameters);
-
-        internal static Dictionary<MethodBase, PatchDelegate> MethodDelegate = new Dictionary<MethodBase, PatchDelegate>();
-
-        private static Dictionary<string, int> methodsPatched = new Dictionary<string, int>();
-
-        internal static void DoPatchedMethodsOutput()
+        internal static void Output()
         {
-            foreach (KeyValuePair<string, int> pair in methodsPatched)
+            foreach (KeyValuePair<string, int> pair in MethodsPatched)
             {
                 InformationManager.DisplayMessage(new InformationMessage($"Debugger patched {pair.Value} {pair.Key} " + (pair.Value == 1 ? "method" : "methods"), Colors.Red, "Debugger"));
             }
         }
 
-        private static void PatchMethods(string patchType, Harmony harmony, string nameSpace, string typeName, string methodName, PatchDelegate patchDelegate, bool modNamespaceOnly, bool modNamespaceExplicit, bool typeNameExplicit, bool methodNameExplicit)
+        internal static void Patch(Harmony harmony)
         {
-            List<MethodInfo> methods = GetMethods(nameSpace, typeName, methodName, modNamespaceOnly, modNamespaceExplicit, typeNameExplicit, methodNameExplicit);
-            if (methods.Any())
+            PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "TroopUpgradeTracker", "CalculateReadyToUpgradeSafe", delegate (object instance, ref object result, object[] parameters)
             {
-                foreach (MethodInfo method in methods)
+                if (((TroopRosterElement)parameters[0]).Character is null || ((PartyBase)parameters[1]) is null)
                 {
-                    string methodToUse = patchType;
-                    if (method.ReturnType != typeof(void)) methodToUse += "WithReturn";
-                    if (!(patchDelegate is null)) MethodDelegate[method] = patchDelegate;
-                    int parameters = method.GetParameters().Count();
-                    if (parameters > 0) methodToUse += $"With{parameters}Parameters";
-                    if (patchType == "Prefix") harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
-                    else if (patchType == "Finalizer") harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
+                    result = 0;
+                    return false;
                 }
-                string rootNameSpace = nameSpace;
-                int nameSpaceSub = rootNameSpace.IndexOf('.');
-                if (nameSpaceSub != -1) rootNameSpace = rootNameSpace.Substring(0, nameSpaceSub);
-                if (methodsPatched.TryGetValue(rootNameSpace, out int i)) methodsPatched[rootNameSpace] = i + methods.Count;
-                else methodsPatched[rootNameSpace] = methods.Count;
-            }
-        }
-
-        internal static void PrefixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, PatchDelegate prefix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            PatchMethods("Prefix",
-                harmony: harmony,
-                nameSpace: nameSpace,
-                typeName: typeName,
-                methodName: methodName,
-                patchDelegate: prefix,
-                modNamespaceOnly: modNamespaceOnly,
-                modNamespaceExplicit: modNamespaceExplicit,
-                typeNameExplicit: typeNameExplicit,
-                methodNameExplicit: methodNameExplicit);
-        }
-
-        internal static void FinalizeMethods(Harmony harmony, string nameSpace, string typeName, string methodName, PatchDelegate fallback = null, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            PatchMethods("Finalizer",
-                harmony: harmony,
-                nameSpace: nameSpace,
-                typeName: typeName,
-                methodName: methodName,
-                patchDelegate: fallback,
-                modNamespaceOnly: modNamespaceOnly,
-                modNamespaceExplicit: modNamespaceExplicit,
-                typeNameExplicit: typeNameExplicit,
-                methodNameExplicit: methodNameExplicit);
-        }
-
-        private static List<MethodInfo> GetMethods(string nameSpace, string typeName, string methodName, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            List<MethodInfo> methods = new List<MethodInfo>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().Reverse())
+                return true;
+            });
+            PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetHeroesForEffectiveRelation", delegate (object instance, ref object result, object[] parameters)
             {
-                if (assembly == typeof(SubModule).Assembly) continue;
-                foreach (Type type in assembly.GetTypes().Reverse())
+                if (((Hero)parameters[0]) is null || ((Hero)parameters[1]) is null)
                 {
-                    bool canUseNamespace = (modNamespaceOnly ? (modNamespaceExplicit ? type.Namespace == nameSpace : type.Namespace?.Contains(nameSpace)) : true).GetValueOrDefault(false);
-                    bool canUseType = (typeNameExplicit ? type.Name == typeName : type.Name?.Contains(typeName)).GetValueOrDefault(false);
-                    if (canUseNamespace && canUseType)
-                    {
-                        void AddMethod(MethodInfo method)
-                        {
-                            if (!(method is null))
-                            {
-                                if (method.GetGenericArguments().Any())
-                                {
-                                    foreach (Type genericMethodArg in method.GetGenericArguments().Reverse())
-                                    {
-                                        methods.Add(method.MakeGenericMethod(genericMethodArg));
-                                    }
-                                }
-                                else
-                                {
-                                    methods.Add(method);
-                                }
-                            }
-                        }
-                        if (type.GetGenericArguments().Any())
-                        {
-                            foreach (Type genericTypeArg in type.GetGenericArguments())
-                            {
-                                foreach (MethodInfo method in type.MakeGenericType(genericTypeArg).GetMethods((BindingFlags)(-1)).Reverse())
-                                {
-                                    if (methodNameExplicit ? method.Name == methodName : method.Name.Contains(methodName))
-                                    {
-                                        AddMethod(method);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            foreach (MethodInfo method in type.GetMethods((BindingFlags)(-1)).Reverse())
-                            {
-                                if (methodNameExplicit ? method.Name == methodName : method.Name.Contains(methodName))
-                                {
-                                    AddMethod(method);
-                                }
-                            }
-                        }
-                    }
+                    parameters[2] = (Hero)parameters[0];
+                    parameters[3] = (Hero)parameters[1];
+                    return false;
                 }
-            }
-            return methods;
+                return true;
+            });
+            PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents", "DefaultPartyTroopUpgradeModel", "CanTroopGainXp", delegate (object instance, ref object result, object[] parameters)
+            {
+                if (((PartyBase)parameters[0]) is null || ((CharacterObject)parameters[1]) is null)
+                {
+                    result = false;
+                    return false;
+                }
+                return true;
+            });
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
+            {
+                result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
+                return true;
+            });
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
+            FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
+            FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
+            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction", "HasEnoughScoreCondition", "ApplyCondition", modNamespaceExplicit: false);
+            FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
         }
     }
 }

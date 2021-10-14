@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using static Debugger.Patcher;
+using static Debugger.PatchUtils;
 
 namespace Debugger
 {
