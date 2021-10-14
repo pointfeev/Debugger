@@ -27,7 +27,26 @@ namespace Debugger
                     return true;
                 });
 
-                // need to add the rest of the methods from the Patches folder
+                Patcher.PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetHeroesForEffectiveRelation", delegate (object instance, ref object result, object[] parameters)
+                {
+                    if (((Hero)parameters[0]) is null || ((Hero)parameters[1]) is null)
+                    {
+                        parameters[2] = (Hero)parameters[0];
+                        parameters[3] = (Hero)parameters[1];
+                        return false;
+                    }
+                    return true;
+                });
+
+                Patcher.PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents", "DefaultPartyTroopUpgradeModel", "CanTroopGainXp", delegate (object instance, ref object result, object[] parameters)
+                {
+                    if (((PartyBase)parameters[0]) is null || ((CharacterObject)parameters[1]) is null)
+                    {
+                        result = false;
+                        return false;
+                    }
+                    return true;
+                });
 
                 Patcher.FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
                 {
@@ -45,7 +64,7 @@ namespace Debugger
 
                 Patcher.FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
 
-                //PatchUtils.FinalizeMethods(harmony, "DistinguishedService", "DSBattleLogic", "ShowBattleResults");
+                //Patcher.FinalizeMethods(harmony, "DistinguishedService", "DSBattleLogic", "ShowBattleResults");
 
                 harmonyPatched = true;
                 Patcher.DoPatchedMethodsOutput();
