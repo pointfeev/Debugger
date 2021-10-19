@@ -71,6 +71,7 @@ namespace Debugger
             {
                 if ((IFaction)parameters[0] is null || (IFaction)parameters[1] is null || (IFaction)parameters[2] is null)
                 {
+                    parameters[4] = TextObject.Empty;
                     result = 0f;
                     return false;
                 }
