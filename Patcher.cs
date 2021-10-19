@@ -67,16 +67,12 @@ namespace Debugger
                 }
                 return true;
             });
-            PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetScoreOfWarInternal", delegate (object instance, ref object result, object[] parameters)
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetScoreOfWarInternal", delegate (object instance, ref object result, object[] parameters)
             {
-                if ((IFaction)parameters[0] is null || (IFaction)parameters[1] is null || (IFaction)parameters[2] is null)
-                {
-                    parameters[4] = TextObject.Empty;
-                    result = 0f;
-                    return false;
-                }
+                parameters[4] = TextObject.Empty;
+                result = 0f;
                 return true;
-            }, modNamespaceExplicit: false, typeNameExplicit: false);
+            });
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", delegate (object instance, ref object result, object[] parameters)
             {
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
