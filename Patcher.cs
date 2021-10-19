@@ -82,6 +82,7 @@ namespace Debugger
                 return true;
             }, modNamespaceExplicit: false, typeNameExplicit: false);
             FinalizeMethods(harmony, "Diplomacy.DiplomaticAction", "HasEnoughScoreCondition", "ApplyCondition", modNamespaceExplicit: false);
+            FinalizeMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability");
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", fallback: delegate (object instance, ref object result, object[] parameters)
             {
