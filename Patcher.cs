@@ -81,6 +81,12 @@ namespace Debugger
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
                 return true;
             });
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
+
+            FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
+
             PrefixMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
             {
                 if ((Kingdom)parameters[0] is null || (Kingdom)parameters[1] is null)
@@ -101,13 +107,12 @@ namespace Debugger
                 }
                 return true;
             });
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
-            FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
+
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
             FinalizeMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability");
+
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
+
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", fallback: delegate (object instance, ref object result, object[] parameters)
             {
                 result = false;
