@@ -23,7 +23,7 @@ namespace Debugger
 
         internal static void DoOutputForMethod(MethodBase method, bool allowRepeat = false)
         {
-            DoOutput("Debugger prevented crashes at " + method.ReflectedType.FullName + method.Name);
+            DoOutput("Debugger just prevented issues at " + method.ReflectedType.FullName + method.Name);
         }
     }
 }
