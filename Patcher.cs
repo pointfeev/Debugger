@@ -38,6 +38,15 @@ namespace Debugger
                 }
                 return true;
             });
+            PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "Clan", "GetRelationWithClan", delegate (object instance, ref object result, object[] parameters)
+            {
+                if (((Clan)parameters[0]) is null)
+                {
+                    result = 0;
+                    return false;
+                }
+                return true;
+            });
             PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetHeroesForEffectiveRelation", delegate (object instance, ref object result, object[] parameters)
             {
                 if (((Hero)parameters[0]) is null || ((Hero)parameters[1]) is null)
