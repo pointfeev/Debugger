@@ -99,9 +99,9 @@ namespace Debugger
                 result = true;
                 return true;
             });
-
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
             FinalizeMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability");
+            FinalizeMethods(harmony, "Diplomacy.CampaignBehaviors", "DiplomaticAgreementBehavior", "ConsiderNonAggressionPact");
 
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
 
