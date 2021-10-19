@@ -9,6 +9,7 @@ namespace Debugger
     internal static class PatchUtils
     {
         internal delegate bool PatchDelegate(object instance, ref object result, params object[] parameters);
+
         internal static Dictionary<MethodBase, PatchDelegate> MethodDelegate = new Dictionary<MethodBase, PatchDelegate>();
         internal static Dictionary<string, int> MethodsPatched = new Dictionary<string, int>();
 
@@ -24,8 +25,12 @@ namespace Debugger
                     if (!(patchDelegate is null)) MethodDelegate[method] = patchDelegate;
                     int parameters = method.GetParameters().Count();
                     if (parameters > 0) methodToUse += $"With{parameters}Parameters";
-                    if (patchType == "Prefix") harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
-                    else if (patchType == "Finalizer") harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
+                    try
+                    {
+                        if (patchType == "Prefix") harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
+                        else if (patchType == "Finalizer") harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
+                    }
+                    catch { }
                 }
                 string rootNameSpace = nameSpace;
                 int nameSpaceSub = rootNameSpace.IndexOf('.');
