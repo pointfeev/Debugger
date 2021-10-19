@@ -76,7 +76,7 @@ namespace Debugger
                 }
                 return true;
             }, modNamespaceExplicit: false, typeNameExplicit: false);
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", delegate (object instance, ref object result, object[] parameters)
             {
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
                 return true;
@@ -87,24 +87,16 @@ namespace Debugger
 
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
 
-            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
             {
-                if ((Kingdom)parameters[0] is null || (Kingdom)parameters[1] is null)
-                {
-                    parameters[2] = new TextObject("{=VvTTrRpl}This faction is not interested in forming an alliance with you.", null);
-                    result = true;
-                    return false;
-                }
+                parameters[2] = new TextObject("{=VvTTrRpl}This faction is not interested in forming an alliance with you.", null);
+                result = true;
                 return true;
             });
-            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
             {
-                if ((Kingdom)parameters[0] is null || (Kingdom)parameters[1] is null)
-                {
-                    parameters[2] = new TextObject("{=M4SGjzQP}This faction is not interested in forming a non-aggression pact with you.", null);
-                    result = true;
-                    return false;
-                }
+                parameters[2] = new TextObject("{=M4SGjzQP}This faction is not interested in forming a non-aggression pact with you.", null);
+                result = true;
                 return true;
             });
 
@@ -113,7 +105,7 @@ namespace Debugger
 
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
 
-            FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", fallback: delegate (object instance, ref object result, object[] parameters)
+            FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", delegate (object instance, ref object result, object[] parameters)
             {
                 result = false;
                 return true;
