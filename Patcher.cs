@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade.View;
 using static Debugger.PatchUtils;
 
@@ -66,14 +67,6 @@ namespace Debugger
                 }
                 return true;
             });
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
-            {
-                result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
-                return true;
-            });
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
             PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetScoreOfWarInternal", delegate (object instance, ref object result, object[] parameters)
             {
                 if ((IFaction)parameters[0] is null || (IFaction)parameters[1] is null || (IFaction)parameters[2] is null)
@@ -83,9 +76,36 @@ namespace Debugger
                 }
                 return true;
             }, modNamespaceExplicit: false, typeNameExplicit: false);
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", fallback: delegate (object instance, ref object result, object[] parameters)
+            {
+                result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
+                return true;
+            });
+            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            {
+                if ((Kingdom)parameters[0] is null || (Kingdom)parameters[1] is null)
+                {
+                    parameters[2] = new TextObject("{=VvTTrRpl}This faction is not interested in forming an alliance with you.", null);
+                    result = true;
+                    return false;
+                }
+                return true;
+            });
+            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            {
+                if ((Kingdom)parameters[0] is null || (Kingdom)parameters[1] is null)
+                {
+                    parameters[2] = new TextObject("{=M4SGjzQP}This faction is not interested in forming a non-aggression pact with you.", null);
+                    result = true;
+                    return false;
+                }
+                return true;
+            });
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
+            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
-            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction", "HasEnoughScoreCondition", "ApplyCondition", modNamespaceExplicit: false);
             FinalizeMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability");
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", fallback: delegate (object instance, ref object result, object[] parameters)
