@@ -9,7 +9,9 @@ namespace Debugger
         internal static bool IsMethodInCallStack(MethodBase method)
         {
             StackFrame[] stackFrames = new StackTrace().GetFrames();
-            // 0 = current method 1 = calling method 2+ = methods we want to check
+            // 0 = current method
+            // 1 = calling method
+            // 2+ = methods we want to check
             for (int i = 2; i <= stackFrames.Length; i++)
             {
                 StackFrame stackFrame = stackFrames.ElementAtOrValue(i, null);
