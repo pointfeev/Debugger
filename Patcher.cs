@@ -78,7 +78,7 @@ namespace Debugger
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
             PrefixMethods(harmony, "Diplomacy", "ScoringModel", "GetScore", delegate (object instance, ref object result, object[] parameters)
             {
-                result = new ExplainedNumber(20, (bool)parameters[2]);
+                result = new ExplainedNumber();
                 return true;
             }, modNamespaceExplicit: false, typeNameExplicit: false);
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
