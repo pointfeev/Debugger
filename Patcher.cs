@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Core;
@@ -80,6 +81,7 @@ namespace Debugger
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
                 return true;
             });
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "RebellionsCampaignBehavior", "CreateRebelPartyAndClan");
             FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
@@ -94,16 +96,49 @@ namespace Debugger
 
             #region Diplomacy
 
+            PostfixMethods(harmony, "TaleWorlds.CampaignSystem", "CampaignObjectManager", "get_Kingdoms", delegate (object instance, ref object result, object[] parameters)
+            { // this is to avoid exceptions from changing the Kingdoms list mid-iteration
+                MBReadOnlyList<Kingdom> list = ((MBReadOnlyList<Kingdom>)result)?.ToList()?.GetReadOnlyList();
+                result = list ?? new MBReadOnlyList<Kingdom>(new List<Kingdom>());
+                return true;
+            });
+            void RemoveKingdom(Kingdom kingdom)
+            {
+                if (!kingdom.IsEliminated) DestroyKingdomAction.Apply(kingdom);
+                CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
+                List<Kingdom> kingdoms = (List<Kingdom>)typeof(CampaignObjectManager).GetCachedField("_kingdoms").GetValue(campaignObjectManager);
+                kingdoms.RemoveAll(k => k == kingdom);
+                typeof(CampaignObjectManager).GetCachedField("_kingdoms").SetValue(campaignObjectManager, kingdoms);
+                typeof(CampaignObjectManager).GetCachedProperty("Kingdoms").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
+                    kingdoms.GetReadOnlyList()
+                });
+                List<IFaction> factions = (List<IFaction>)typeof(CampaignObjectManager).GetCachedField("_factions").GetValue(campaignObjectManager);
+                factions.RemoveAll(f => f == kingdom);
+                typeof(CampaignObjectManager).GetCachedField("_factions").SetValue(campaignObjectManager, factions);
+                typeof(CampaignObjectManager).GetCachedProperty("Factions").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
+                    factions.GetReadOnlyList()
+                });
+                Type campaignObjects = typeof(CampaignObjectManager).GetCachedNestedType("CampaignObjects");
+                typeof(CampaignObjectManager).GetCachedMethod("OnItemRemoved").MakeCachedGenericMethod(typeof(Kingdom)).Invoke(campaignObjectManager, new object[] {
+                    Enum.ToObject(campaignObjects, campaignObjects.GetCachedField("Kingdoms").GetValue(campaignObjects)), kingdom
+                });
+            }
+            void RemoveClan(Clan clan)
+            {
+                if (!clan.IsEliminated) DestroyClanAction.Apply(clan);
+                CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
+                typeof(CampaignObjectManager).GetCachedMethod("RemoveClan").Invoke(campaignObjectManager, new object[] { clan });
+            }
             bool IsFactionValid(IFaction faction)
             {
                 if (!(faction as Kingdom is null) && faction.Leader is null)
                 {
-                    if (!faction.IsEliminated) DestroyKingdomAction.Apply(faction as Kingdom);
+                    RemoveKingdom(faction as Kingdom);
                     return false;
                 }
                 if (!(faction as Clan is null) && faction.Leader is null)
                 {
-                    if (!faction.IsEliminated) DestroyClanAction.Apply(faction as Clan);
+                    RemoveClan(faction as Clan);
                     return false;
                 }
                 return !(faction is null);
