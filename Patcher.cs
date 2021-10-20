@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.Library;
@@ -86,10 +87,23 @@ namespace Debugger
 
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
 
+            bool IsFactionValid(IFaction faction)
+            {
+                if (!(faction as Kingdom is null) && faction.Leader is null)
+                {
+                    DestroyKingdomAction.Apply(faction as Kingdom);
+                    return false;
+                }
+                if (!(faction as Clan is null) && faction.Leader is null)
+                {
+                    DestroyClanAction.Apply(faction as Clan);
+                    return false;
+                }
+                return !(faction is null);
+            }
             AllPurposePatchDelegate hasEnoughScoreCondition = delegate (object instance, ref object result, object[] parameters)
             {
-                if ((Kingdom)parameters[0] is null || ((Kingdom)parameters[0]).Leader is null ||
-                    (Kingdom)parameters[1] is null || ((Kingdom)parameters[1]).Leader is null)
+                if (!IsFactionValid(parameters[0] as IFaction) || !IsFactionValid(parameters[1] as IFaction))
                 {
                     result = false;
                     return false;
@@ -105,24 +119,15 @@ namespace Debugger
                 Type vmType = viewModel.GetType();
                 IFaction faction1 = (IFaction)vmType.BaseType.GetCachedField("Faction1").GetValue(viewModel);
                 IFaction faction2 = (IFaction)vmType.BaseType.GetCachedField("Faction2").GetValue(viewModel);
-                if (faction1 is null || faction1.Leader is null || faction2 is null || faction2.Leader is null)
-                {
-                    type.GetCachedProperty("IsAllianceAvailable").SetValue(instance, false);
-                    type.GetCachedProperty("IsNonAggressionPactAvailable").SetValue(instance, false);
-                    HintViewModel hintVM = new HintViewModel();
-                    hintVM.HintText = new TextObject("{=!}Debugger is preventing issues from this action.");
-                    type.GetCachedProperty("AllianceHint").SetValue(instance, hintVM);
-                    type.GetCachedProperty("NonAggressionPactHint").SetValue(instance, hintVM);
-                    type.GetCachedProperty("AllianceInfluenceCost").SetValue(instance, 0);
-                    type.GetCachedProperty("AllianceGoldCost").SetValue(instance, 0);
-                    type.GetCachedProperty("NonAggressionPactInfluenceCost").SetValue(instance, 0);
-                    type.GetCachedProperty("NonAggressionPactGoldCost").SetValue(instance, 0);
-                    return false;
-                }
+                if (!IsFactionValid(faction1) || !IsFactionValid(faction2)) return false;
+                return true;
+            });
+            PrefixMethods(harmony, "Diplomacy.CampaignBehaviors", "DiplomaticAgreementBehavior", "ConsiderNonAggressionPact", delegate (object instance, ref object result, object[] parameters)
+            {
+                if (!IsFactionValid(parameters[0] as IFaction)) return false;
                 return true;
             });
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
-            FinalizeMethods(harmony, "Diplomacy.CampaignBehaviors", "DiplomaticAgreementBehavior", "ConsiderNonAggressionPact");
 
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", delegate (object instance, ref object result, object[] parameters)
