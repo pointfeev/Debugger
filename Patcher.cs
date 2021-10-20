@@ -85,6 +85,43 @@ namespace Debugger
             FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
+            MBReadOnlyList<Kingdom> checkedKingdomsList = null;
+            PostfixMethods(harmony, "TaleWorlds.CampaignSystem", "CampaignObjectManager", "get_Kingdoms", delegate (object instance, ref object result, object[] parameters)
+            {
+                MBReadOnlyList<Kingdom> kingdomsList = (MBReadOnlyList<Kingdom>)result;
+                if (checkedKingdomsList is null || checkedKingdomsList.Count != kingdomsList.Count || checkedKingdomsList.Last() != kingdomsList.Last())
+                {
+                    checkedKingdomsList = kingdomsList;
+                    int i = 0;
+                    foreach (Kingdom kingdom in checkedKingdomsList.ToList())
+                    {
+                        if (kingdom.Culture is null || kingdom.Leader is null)
+                        {
+                            if (!kingdom.IsEliminated) DestroyKingdomAction.Apply(kingdom);
+                            CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
+                            List<Kingdom> kingdoms = (List<Kingdom>)typeof(CampaignObjectManager).GetCachedField("_kingdoms").GetValue(campaignObjectManager);
+                            kingdoms.Remove(kingdom);
+                            typeof(CampaignObjectManager).GetCachedField("_kingdoms").SetValue(campaignObjectManager, kingdoms);
+                            typeof(CampaignObjectManager).GetCachedProperty("Kingdoms").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
+                                kingdoms.GetReadOnlyList()
+                            });
+                            List<IFaction> factions = (List<IFaction>)typeof(CampaignObjectManager).GetCachedField("_factions").GetValue(campaignObjectManager);
+                            factions.Remove(kingdom);
+                            typeof(CampaignObjectManager).GetCachedField("_factions").SetValue(campaignObjectManager, factions);
+                            typeof(CampaignObjectManager).GetCachedProperty("Factions").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
+                                factions.GetReadOnlyList()
+                            });
+                            Type campaignObjects = typeof(CampaignObjectManager).GetCachedNestedType("CampaignObjects");
+                            typeof(CampaignObjectManager).GetCachedMethod("OnItemRemoved").MakeCachedGenericMethod(typeof(Kingdom)).Invoke(campaignObjectManager, new object[] {
+                                Enum.ToObject(campaignObjects, campaignObjects.GetCachedField("Kingdoms").GetValue(campaignObjects)), kingdom
+                            });
+                            i++;
+                        }
+                    }
+                    if (i > 0) OutputUtils.DoOutput($"Debugger just removed {i} invalid {(i == 1 ? "kingdom" : "kingdoms")} to prevent issues.");
+                }
+                return true;
+            });
 
             #endregion TaleWorlds
 
@@ -93,85 +130,6 @@ namespace Debugger
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
 
             #endregion PocColor
-
-            #region Diplomacy
-
-            PostfixMethods(harmony, "TaleWorlds.CampaignSystem", "CampaignObjectManager", "get_Kingdoms", delegate (object instance, ref object result, object[] parameters)
-            { // this is to avoid exceptions from changing the Kingdoms list mid-iteration
-                MBReadOnlyList<Kingdom> list = ((MBReadOnlyList<Kingdom>)result)?.ToList()?.GetReadOnlyList();
-                result = list ?? new MBReadOnlyList<Kingdom>(new List<Kingdom>());
-                return true;
-            });
-            void RemoveKingdom(Kingdom kingdom)
-            {
-                if (!kingdom.IsEliminated) DestroyKingdomAction.Apply(kingdom);
-                CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
-                List<Kingdom> kingdoms = (List<Kingdom>)typeof(CampaignObjectManager).GetCachedField("_kingdoms").GetValue(campaignObjectManager);
-                kingdoms.RemoveAll(k => k == kingdom);
-                typeof(CampaignObjectManager).GetCachedField("_kingdoms").SetValue(campaignObjectManager, kingdoms);
-                typeof(CampaignObjectManager).GetCachedProperty("Kingdoms").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
-                    kingdoms.GetReadOnlyList()
-                });
-                List<IFaction> factions = (List<IFaction>)typeof(CampaignObjectManager).GetCachedField("_factions").GetValue(campaignObjectManager);
-                factions.RemoveAll(f => f == kingdom);
-                typeof(CampaignObjectManager).GetCachedField("_factions").SetValue(campaignObjectManager, factions);
-                typeof(CampaignObjectManager).GetCachedProperty("Factions").GetCachedSetMethod().Invoke(campaignObjectManager, new object[] {
-                    factions.GetReadOnlyList()
-                });
-                Type campaignObjects = typeof(CampaignObjectManager).GetCachedNestedType("CampaignObjects");
-                typeof(CampaignObjectManager).GetCachedMethod("OnItemRemoved").MakeCachedGenericMethod(typeof(Kingdom)).Invoke(campaignObjectManager, new object[] {
-                    Enum.ToObject(campaignObjects, campaignObjects.GetCachedField("Kingdoms").GetValue(campaignObjects)), kingdom
-                });
-            }
-            void RemoveClan(Clan clan)
-            {
-                if (!clan.IsEliminated) DestroyClanAction.Apply(clan);
-                CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
-                typeof(CampaignObjectManager).GetCachedMethod("RemoveClan").Invoke(campaignObjectManager, new object[] { clan });
-            }
-            bool IsFactionValid(IFaction faction)
-            {
-                if (!(faction as Kingdom is null) && faction.Leader is null)
-                {
-                    RemoveKingdom(faction as Kingdom);
-                    return false;
-                }
-                if (!(faction as Clan is null) && faction.Leader is null)
-                {
-                    RemoveClan(faction as Clan);
-                    return false;
-                }
-                return !(faction is null);
-            }
-            AllPurposePatchDelegate hasEnoughScoreCondition = delegate (object instance, ref object result, object[] parameters)
-            {
-                if (!IsFactionValid(parameters[0] as IFaction) || !IsFactionValid(parameters[1] as IFaction))
-                {
-                    result = false;
-                    return false;
-                }
-                return true;
-            };
-            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", hasEnoughScoreCondition);
-            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", hasEnoughScoreCondition);
-            PrefixMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability", delegate (object instance, ref object result, object[] parameters)
-            {
-                Type type = instance.GetType();
-                object viewModel = type.BaseType.GetCachedProperty("ViewModel").GetValue(instance);
-                Type vmType = viewModel.GetType();
-                IFaction faction1 = (IFaction)vmType.BaseType.GetCachedField("Faction1").GetValue(viewModel);
-                IFaction faction2 = (IFaction)vmType.BaseType.GetCachedField("Faction2").GetValue(viewModel);
-                if (!IsFactionValid(faction1) || !IsFactionValid(faction2)) return false;
-                return true;
-            });
-            PrefixMethods(harmony, "Diplomacy.CampaignBehaviors", "DiplomaticAgreementBehavior", "ConsiderNonAggressionPact", delegate (object instance, ref object result, object[] parameters)
-            {
-                if (!IsFactionValid(parameters[0] as IFaction)) return false;
-                return true;
-            });
-            FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
-
-            #endregion Diplomacy
 
             #region SupplyLines
 
