@@ -69,7 +69,6 @@ namespace Debugger
             });
             FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetScoreOfWarInternal", delegate (object instance, ref object result, object[] parameters)
             {
-                parameters[4] = TextObject.Empty;
                 result = 0f;
                 return true;
             });
@@ -84,16 +83,24 @@ namespace Debugger
 
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
 
+            /*PostfixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            {
+                result = false;
+                return true;
+            });*/
             FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
             {
-                parameters[2] = new TextObject("{=VvTTrRpl}This faction is not interested in forming an alliance with you.", null);
-                result = true;
+                result = false;
                 return true;
             });
+            /*PostfixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            {
+                result = false;
+                return true;
+            });*/
             FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
             {
-                parameters[2] = new TextObject("{=M4SGjzQP}This faction is not interested in forming a non-aggression pact with you.", null);
-                result = true;
+                result = false;
                 return true;
             });
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");

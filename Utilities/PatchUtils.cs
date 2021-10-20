@@ -28,6 +28,7 @@ namespace Debugger
                     try
                     {
                         if (patchType == "Prefix") harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
+                        else if (patchType == "Postfix") harmony.Patch(method, postfix: new HarmonyMethod(AccessTools.Method(typeof(Postfixes), methodToUse)));
                         else if (patchType == "Finalizer") harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
                     }
                     catch { }
@@ -41,6 +42,11 @@ namespace Debugger
             }
         }
 
+        internal static string GetUniqueMethodString(MethodBase method)
+        {
+            return method.ReflectedType.FullName + "." + method.Name + "(" + string.Join(", ", method.GetParameters().ToList()) + ")";
+        }
+
         internal static void PrefixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, PatchDelegate prefix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
         {
             PatchMethods("Prefix",
@@ -49,6 +55,20 @@ namespace Debugger
                 typeName: typeName,
                 methodName: methodName,
                 patchDelegate: prefix,
+                modNamespaceOnly: modNamespaceOnly,
+                modNamespaceExplicit: modNamespaceExplicit,
+                typeNameExplicit: typeNameExplicit,
+                methodNameExplicit: methodNameExplicit);
+        }
+
+        internal static void PostfixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, PatchDelegate postfix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
+        {
+            PatchMethods("Postfix",
+                harmony: harmony,
+                nameSpace: nameSpace,
+                typeName: typeName,
+                methodName: methodName,
+                patchDelegate: postfix,
                 modNamespaceOnly: modNamespaceOnly,
                 modNamespaceExplicit: modNamespaceExplicit,
                 typeNameExplicit: typeNameExplicit,

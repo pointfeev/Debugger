@@ -333,6 +333,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Methods\Postfixes.cs" />
     <Compile Include="Patcher.cs" />
     <Compile Include="Methods\Finalizers.cs" />
     <Compile Include="Methods\Prefixes.cs" />
