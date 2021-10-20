@@ -1,7 +1,10 @@
 ﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade.View;
@@ -83,32 +86,45 @@ namespace Debugger
 
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
 
-            /*PostfixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            AllPurposePatchDelegate hasEnoughScoreCondition = delegate (object instance, ref object result, object[] parameters)
             {
-                result = false;
+                if ((Kingdom)parameters[0] is null || ((Kingdom)parameters[0]).Leader is null ||
+                    (Kingdom)parameters[1] is null || ((Kingdom)parameters[1]).Leader is null)
+                {
+                    result = false;
+                    return false;
+                }
                 return true;
-            });*/
-            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
+            };
+            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.Alliance.Conditions", "HasEnoughScoreCondition", "ApplyCondition", hasEnoughScoreCondition);
+            PrefixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", hasEnoughScoreCondition);
+            PrefixMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability", delegate (object instance, ref object result, object[] parameters)
             {
-                result = false;
-                return true;
-            });
-            /*PostfixMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
-            {
-                result = false;
-                return true;
-            });*/
-            FinalizeMethods(harmony, "Diplomacy.DiplomaticAction.NonAggressionPact", "HasEnoughScoreCondition", "ApplyCondition", delegate (object instance, ref object result, object[] parameters)
-            {
-                result = false;
+                Type type = instance.GetType();
+                object viewModel = type.BaseType.GetCachedProperty("ViewModel").GetValue(instance);
+                Type vmType = viewModel.GetType();
+                IFaction faction1 = (IFaction)vmType.BaseType.GetCachedField("Faction1").GetValue(viewModel);
+                IFaction faction2 = (IFaction)vmType.BaseType.GetCachedField("Faction2").GetValue(viewModel);
+                if (faction1 is null || faction1.Leader is null || faction2 is null || faction2.Leader is null)
+                {
+                    type.GetCachedProperty("IsAllianceAvailable").SetValue(instance, false);
+                    type.GetCachedProperty("IsNonAggressionPactAvailable").SetValue(instance, false);
+                    HintViewModel hintVM = new HintViewModel();
+                    hintVM.HintText = new TextObject("{=!}Debugger is preventing issues from this action.");
+                    type.GetCachedProperty("AllianceHint").SetValue(instance, hintVM);
+                    type.GetCachedProperty("NonAggressionPactHint").SetValue(instance, hintVM);
+                    type.GetCachedProperty("AllianceInfluenceCost").SetValue(instance, 0);
+                    type.GetCachedProperty("AllianceGoldCost").SetValue(instance, 0);
+                    type.GetCachedProperty("NonAggressionPactInfluenceCost").SetValue(instance, 0);
+                    type.GetCachedProperty("NonAggressionPactGoldCost").SetValue(instance, 0);
+                    return false;
+                }
                 return true;
             });
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
-            FinalizeMethods(harmony, "Diplomacy.ViewModelMixin", "KingdomTruceItemVmMixin", "UpdateActionAvailability");
             FinalizeMethods(harmony, "Diplomacy.CampaignBehaviors", "DiplomaticAgreementBehavior", "ConsiderNonAggressionPact");
 
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
-
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", delegate (object instance, ref object result, object[] parameters)
             {
                 result = false;

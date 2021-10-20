@@ -10,7 +10,7 @@ namespace Debugger
         {
             if (!(exception is null))
             {
-                if (MethodDelegate.TryGetValue(originalMethod, out PatchDelegate @delegate))
+                if (MethodDelegate.TryGetValue(originalMethod, out AllPurposePatchDelegate @delegate))
                 {
                     @delegate.Invoke(instance, ref result, parameters);
                 }

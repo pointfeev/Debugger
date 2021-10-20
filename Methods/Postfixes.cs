@@ -7,7 +7,7 @@ namespace Debugger
     {
         private static void DoPostfix(MethodBase originalMethod, object instance, ref object result, params object[] parameters)
         {
-            if (MethodDelegate.TryGetValue(originalMethod, out PatchDelegate @delegate))
+            if (MethodDelegate.TryGetValue(originalMethod, out AllPurposePatchDelegate @delegate))
             {
                 bool ret = @delegate.Invoke(instance, ref result, parameters);
                 if (!ret) OutputUtils.DoOutputForMethod(originalMethod);
