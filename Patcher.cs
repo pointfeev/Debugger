@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.Core;
-using TaleWorlds.Core.ViewModelCollection;
 using TaleWorlds.Library;
-using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade.View;
 using static Debugger.PatchUtils;
 
@@ -101,12 +98,12 @@ namespace Debugger
             {
                 if (!(faction as Kingdom is null) && faction.Leader is null)
                 {
-                    DestroyKingdomAction.Apply(faction as Kingdom);
+                    if (!faction.IsEliminated) DestroyKingdomAction.Apply(faction as Kingdom);
                     return false;
                 }
                 if (!(faction as Clan is null) && faction.Leader is null)
                 {
-                    DestroyClanAction.Apply(faction as Clan);
+                    if (!faction.IsEliminated) DestroyClanAction.Apply(faction as Clan);
                     return false;
                 }
                 return !(faction is null);
