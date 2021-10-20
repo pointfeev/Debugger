@@ -126,6 +126,17 @@ namespace Debugger
 
             #endregion PocColor
 
+            #region Diplomacy
+
+            PrefixMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply", delegate (object instance, ref object result, object[] parameters)
+            {
+                Clan clan = (Clan)parameters[0]?.GetType()?.GetCachedProperty("SponsorClan")?.GetValue(parameters[0]);
+                if (clan is null || clan.Kingdom is null || clan.Kingdom.RulingClan != clan) return false;
+                return true;
+            });
+
+            #endregion Diplomacy
+
             #region SupplyLines
 
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
