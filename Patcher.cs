@@ -71,11 +71,6 @@ namespace Debugger
                 }
                 return true;
             });
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetScoreOfWarInternal", delegate (object instance, ref object result, object[] parameters)
-            {
-                result = 0f;
-                return true;
-            });
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", delegate (object instance, ref object result, object[] parameters)
             {
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
