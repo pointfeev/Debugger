@@ -8,87 +8,87 @@ namespace Debugger
 {
     internal static class ReflectionUtils
     {
-        public static Type GetCachedNestedType(this Type memberType, string memberName, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static Type GetCachedNestedType(this Type fromType, string nestedTypeName, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(memberType, memberName, out MemberInfo memberInfo)) return memberInfo as Type;
-            Type nestedType = memberType.GetNestedType(memberName, bindingFlags);
-            AddToReflectionCache(memberType, memberName, nestedType);
+            if (CheckReflectionCache(fromType, nestedTypeName, out MemberInfo memberInfo)) return memberInfo as Type;
+            Type nestedType = fromType.GetNestedType(nestedTypeName, bindingFlags);
+            AddToReflectionCache(fromType, nestedTypeName, nestedType);
             return nestedType;
         }
 
-        public static ConstructorInfo GetCachedConstructor(this Type memberType, Type[] types, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static ConstructorInfo GetCachedConstructor(this Type fromType, Type[] types, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(memberType, types.ToString(), out MemberInfo memberInfo)) return memberInfo as ConstructorInfo;
-            ConstructorInfo constructorInfo = memberType.GetConstructor(bindingFlags, null, types, null);
-            AddToReflectionCache(memberType, types.ToString(), constructorInfo);
+            if (CheckReflectionCache(fromType, types.ToString(), out MemberInfo memberInfo)) return memberInfo as ConstructorInfo;
+            ConstructorInfo constructorInfo = fromType.GetConstructor(bindingFlags, null, types, null);
+            AddToReflectionCache(fromType, types.ToString(), constructorInfo);
             return constructorInfo;
         }
 
-        public static FieldInfo GetCachedField(this Type memberType, string memberName, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static FieldInfo GetCachedField(this Type fromType, string fieldName, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(memberType, memberName, out MemberInfo memberInfo)) return memberInfo as FieldInfo;
-            FieldInfo fieldInfo = memberType.GetField(memberName, bindingFlags);
-            AddToReflectionCache(memberType, memberName, fieldInfo);
+            if (CheckReflectionCache(fromType, fieldName, out MemberInfo memberInfo)) return memberInfo as FieldInfo;
+            FieldInfo fieldInfo = fromType.GetField(fieldName, bindingFlags);
+            AddToReflectionCache(fromType, fieldName, fieldInfo);
             return fieldInfo;
         }
 
-        public static PropertyInfo GetCachedProperty(this Type memberType, string memberName, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static PropertyInfo GetCachedProperty(this Type fromType, string propertyName, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(memberType, memberName, out MemberInfo memberInfo)) return memberInfo as PropertyInfo;
-            PropertyInfo propertyInfo = memberType.GetProperty(memberName, bindingFlags);
-            AddToReflectionCache(memberType, memberName, propertyInfo);
+            if (CheckReflectionCache(fromType, propertyName, out MemberInfo memberInfo)) return memberInfo as PropertyInfo;
+            PropertyInfo propertyInfo = fromType.GetProperty(propertyName, bindingFlags);
+            AddToReflectionCache(fromType, propertyName, propertyInfo);
             return propertyInfo;
         }
 
-        public static MethodInfo GetCachedGetMethod(this PropertyInfo propertyInfo)
+        public static MethodInfo GetCachedGetMethod(this PropertyInfo fromPropertyInfo)
         {
-            if (CheckReflectionCache(propertyInfo, "GetMethod", out MemberInfo memberInfo)) return memberInfo as MethodInfo;
-            MethodInfo methodInfo = propertyInfo.GetGetMethod() ?? propertyInfo.GetGetMethod(true);
-            AddToReflectionCache(propertyInfo, "GetMethod", methodInfo);
+            if (CheckReflectionCache(fromPropertyInfo, "GetMethod", out MemberInfo memberInfo)) return memberInfo as MethodInfo;
+            MethodInfo methodInfo = fromPropertyInfo.GetGetMethod() ?? fromPropertyInfo.GetGetMethod(true);
+            AddToReflectionCache(fromPropertyInfo, "GetMethod", methodInfo);
             return methodInfo;
         }
 
-        public static MethodInfo GetCachedSetMethod(this PropertyInfo propertyInfo)
+        public static MethodInfo GetCachedSetMethod(this PropertyInfo fromPropertyInfo)
         {
-            if (CheckReflectionCache(propertyInfo, "SetMethod", out MemberInfo memberInfo)) return memberInfo as MethodInfo;
-            MethodInfo methodInfo = propertyInfo.GetSetMethod() ?? propertyInfo.GetSetMethod(true);
-            AddToReflectionCache(propertyInfo, "SetMethod", methodInfo);
+            if (CheckReflectionCache(fromPropertyInfo, "SetMethod", out MemberInfo memberInfo)) return memberInfo as MethodInfo;
+            MethodInfo methodInfo = fromPropertyInfo.GetSetMethod() ?? fromPropertyInfo.GetSetMethod(true);
+            AddToReflectionCache(fromPropertyInfo, "SetMethod", methodInfo);
             return methodInfo;
         }
 
-        public static MethodInfo GetCachedMethod(this Type memberType, string memberName, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static MethodInfo GetCachedMethod(this Type fromType, string methodName, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(memberType, memberName, out MemberInfo memberInfo)) return memberInfo as MethodInfo;
-            MethodInfo methodInfo = memberType.GetMethod(memberName, bindingFlags);
-            AddToReflectionCache(memberType, memberName, methodInfo);
+            if (CheckReflectionCache(fromType, methodName, out MemberInfo memberInfo)) return memberInfo as MethodInfo;
+            MethodInfo methodInfo = fromType.GetMethod(methodName, bindingFlags);
+            AddToReflectionCache(fromType, methodName, methodInfo);
             return methodInfo;
         }
 
-        public static MethodInfo MakeCachedGenericMethod(this MethodInfo methodInfo, Type genericType)
+        public static MethodInfo MakeCachedGenericMethod(this MethodInfo fromMethodInfo, Type ofType)
         {
-            if (CheckReflectionCache(methodInfo, genericType.FullName, out MemberInfo memberInfo)) return memberInfo as MethodInfo;
-            MethodInfo genericMethodInfo = methodInfo.MakeGenericMethod(genericType);
-            AddToReflectionCache(methodInfo, genericType.FullName, genericMethodInfo);
+            if (CheckReflectionCache(fromMethodInfo, ofType.FullName, out MemberInfo memberInfo)) return memberInfo as MethodInfo;
+            MethodInfo genericMethodInfo = fromMethodInfo.MakeGenericMethod(ofType);
+            AddToReflectionCache(fromMethodInfo, ofType.FullName, genericMethodInfo);
             return genericMethodInfo;
         }
 
-        private static bool CheckReflectionCache(MemberInfo memberType, string identifier, out MemberInfo memberInfo)
+        private static bool CheckReflectionCache(MemberInfo memberInfo, string identifier, out MemberInfo cachedMemberInfo)
         {
-            if (reflectionCache.TryGetValue(memberType, out Dictionary<string, MemberInfo> methodInfos))
-                if (methodInfos.TryGetValue(identifier, out memberInfo)) return true;
-            memberInfo = null;
+            if (reflectionCache.TryGetValue(memberInfo, out Dictionary<string, MemberInfo> methodInfos))
+                if (methodInfos.TryGetValue(identifier, out cachedMemberInfo)) return true;
+            cachedMemberInfo = null;
             return false;
         }
 
-        private static void AddToReflectionCache(MemberInfo memberType, string identifier, MemberInfo memberInfo)
+        private static void AddToReflectionCache(MemberInfo memberInfo, string identifier, MemberInfo cachedMemberInfo)
         {
-            if (!reflectionCache.TryGetValue(memberType, out Dictionary<string, MemberInfo> methodInfos))
+            if (!reflectionCache.TryGetValue(memberInfo, out Dictionary<string, MemberInfo> methodInfos))
             {
                 methodInfos = new Dictionary<string, MemberInfo>();
-                reflectionCache.Add(memberType, methodInfos);
+                reflectionCache.Add(memberInfo, methodInfos);
             }
             if (!methodInfos.TryGetValue(identifier, out MemberInfo _))
-                methodInfos.Add(identifier, memberInfo);
+                methodInfos.Add(identifier, cachedMemberInfo);
         }
 
         private static readonly Dictionary<MemberInfo, Dictionary<string, MemberInfo>> reflectionCache = new Dictionary<MemberInfo, Dictionary<string, MemberInfo>>();
