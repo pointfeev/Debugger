@@ -25,6 +25,8 @@ namespace Debugger
 
         internal static void Patch(Harmony harmony)
         {
+            #region TaleWorlds
+
             PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "TroopUpgradeTracker", "CalculateReadyToUpgradeSafe", delegate (object instance, ref object result, object[] parameters)
             {
                 if (((TroopRosterElement)parameters[0]).Character is null || ((PartyBase)parameters[1]) is null)
@@ -85,7 +87,15 @@ namespace Debugger
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
 
+            #endregion TaleWorlds
+
+            #region PocColor
+
             FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
+
+            #endregion PocColor
+
+            #region Diplomacy
 
             bool IsFactionValid(IFaction faction)
             {
@@ -129,12 +139,23 @@ namespace Debugger
             });
             FinalizeMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply");
 
+            #endregion Diplomacy
+
+            #region SupplyLines
+
             FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
+
+            #endregion SupplyLines
+
+            #region AllegianceOverhaul
+
             FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", delegate (object instance, ref object result, object[] parameters)
             {
                 result = false;
                 return true;
             });
+
+            #endregion AllegianceOverhaul
         }
     }
 }
