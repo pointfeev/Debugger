@@ -27,7 +27,7 @@ namespace Debugger
 
             PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "TroopUpgradeTracker", "CalculateReadyToUpgradeSafe", delegate (object instance, ref object result, object[] parameters)
             {
-                CharacterObject character = ((TroopRosterElement)parameters[0]).Character;
+                CharacterObject character = !(parameters[0] is null) ? ((TroopRosterElement)parameters[0]).Character : null;
                 PartyBase owner = (PartyBase)parameters[1];
                 bool preventError = character is null || owner is null;
                 if (!preventError)
