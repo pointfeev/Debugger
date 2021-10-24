@@ -1,7 +1,7 @@
 # Debugger
 This mod is meant to patch away bugs I've encountered while playing the game that either cause game crashes or that hurt my overall gameplay experience, both from the vanilla game itself and sometimes from other mods that I use.
 
-It currently properly patches a couple dozen methods, and these patches can pretty much stay for all versions of the game; my methods of patching simply ignore a method if it doesn't exist and the fallbacks and fixes only occur if something is actually wrong.
+So far as TaleWorlds doesn't change anything SubModule-related, this mod should work for every version of the game; my methods of patching simply ignore a method if it doesn't exist and the fallbacks only occur if something is actually wrong.
 
 It also adds a few console commands under the prefix "debugger" that attempt to fix menial, mostly save-related issues (such as debugger.fix_all_naked_heroes).
 
