@@ -89,6 +89,11 @@ namespace Debugger
             FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
+            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "SiegeAftermathCampaignBehavior", "GetSiegeAftermathInfluenceCost", delegate (object instance, ref object result, object[] parameters)
+            {
+                result = 0;
+                return true;
+            });
             MBReadOnlyList<Kingdom> checkedKingdomsList = null;
             PostfixMethods(harmony, "TaleWorlds.CampaignSystem", "CampaignObjectManager", "get_Kingdoms", delegate (object instance, ref object result, object[] parameters)
             {
