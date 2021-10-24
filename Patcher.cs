@@ -27,7 +27,16 @@ namespace Debugger
 
             PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "TroopUpgradeTracker", "CalculateReadyToUpgradeSafe", delegate (object instance, ref object result, object[] parameters)
             {
-                if (((TroopRosterElement)parameters[0]).Character is null || ((PartyBase)parameters[1]) is null)
+                CharacterObject character = ((TroopRosterElement)parameters[0]).Character;
+                PartyBase owner = (PartyBase)parameters[1];
+                bool preventError = character is null || owner is null;
+                if (!preventError)
+                {
+                    int cost = 0;
+                    for (int i = 0; i < character.UpgradeTargets.Length; i++) cost += character.GetUpgradeXpCost(owner, i);
+                    if (cost == 0) preventError = true;
+                }
+                if (preventError)
                 {
                     result = 0;
                     return false;
