@@ -16,11 +16,12 @@ namespace Debugger
             return nestedType;
         }
 
-        public static ConstructorInfo GetCachedConstructor(this Type fromType, Type[] types, BindingFlags bindingFlags = (BindingFlags)(-1))
+        public static ConstructorInfo GetCachedConstructor(this Type fromType, Type[] types = null, BindingFlags bindingFlags = (BindingFlags)(-1))
         {
-            if (CheckReflectionCache(fromType, types.ToString(), out MemberInfo memberInfo)) return memberInfo as ConstructorInfo;
+            string identifier = fromType.FullName + (types is null ? "()" : $"({types})");
+            if (CheckReflectionCache(fromType, identifier, out MemberInfo memberInfo)) return memberInfo as ConstructorInfo;
             ConstructorInfo constructorInfo = fromType.GetConstructor(bindingFlags, null, types, null);
-            AddToReflectionCache(fromType, types.ToString(), constructorInfo);
+            AddToReflectionCache(fromType, identifier, constructorInfo);
             return constructorInfo;
         }
 
