@@ -147,7 +147,7 @@ namespace Debugger
                             true);
                     }
                     else continue;
-                    if (IsEquipmentInvalid(hero.BattleEquipment))
+                    /*if (IsEquipmentInvalid(hero.BattleEquipment))
                     {
                         SetUniqueHeroEquipmentFromLists(hero,
                             CharacterObject.ChildTemplates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).BattleEquipments.ToList(),
@@ -162,7 +162,7 @@ namespace Debugger
                             CharacterObject.Templates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).CivilianEquipments.ToList(),
                             true);
                     }
-                    else { numFixed++; continue; }
+                    else { numFixed++; continue; }*/
                     if (IsEquipmentInvalid(hero.BattleEquipment))
                     {
                         numCantFix++;

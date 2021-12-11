@@ -43,57 +43,12 @@ namespace Debugger
                 }
                 return true;
             });
-            PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "FactionManager", "GetRelationBetweenClans", delegate (object instance, ref object result, object[] parameters)
-            {
-                if (((Clan)parameters[0]) is null || ((Clan)parameters[1]) is null)
-                {
-                    result = 0;
-                    return false;
-                }
-                return true;
-            });
-            PrefixMethods(harmony, "TaleWorlds.CampaignSystem", "Clan", "GetRelationWithClan", delegate (object instance, ref object result, object[] parameters)
-            {
-                if (((Clan)parameters[0]) is null)
-                {
-                    result = 0;
-                    return false;
-                }
-                return true;
-            });
-            PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents.Map", "DefaultDiplomacyModel", "GetHeroesForEffectiveRelation", delegate (object instance, ref object result, object[] parameters)
-            {
-                if (((Hero)parameters[0]) is null || ((Hero)parameters[1]) is null)
-                {
-                    parameters[2] = (Hero)parameters[0];
-                    parameters[3] = (Hero)parameters[1];
-                    return false;
-                }
-                return true;
-            });
-            PrefixMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.GameComponents", "DefaultPartyTroopUpgradeModel", "CanTroopGainXp", delegate (object instance, ref object result, object[] parameters)
-            {
-                if (((PartyBase)parameters[0]) is null || ((CharacterObject)parameters[1]) is null)
-                {
-                    result = false;
-                    return false;
-                }
-                return true;
-            });
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "BannerVisual", "ConvertToMultiMesh", delegate (object instance, ref object result, object[] parameters)
             {
                 result = Banner.CreateOneColoredEmptyBanner(0).ConvertToMultiMesh();
                 return true;
             });
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "RebellionsCampaignBehavior", "CreateRebelPartyAndClan");
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "CaravansCampaignBehavior", "OnMapEventEnded");
             FinalizeMethods(harmony, "TaleWorlds.MountAndBlade", "Mission", "CheckMissionEnd");
-            FinalizeMethods(harmony, "TaleWorlds.MountAndBlade.View", "AgentVisuals", "AddSkinArmorWeaponMultiMeshesToEntity");
-            FinalizeMethods(harmony, "TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors", "SiegeAftermathCampaignBehavior", "GetSiegeAftermathInfluenceCost", delegate (object instance, ref object result, object[] parameters)
-            {
-                result = 0;
-                return true;
-            });
             MBReadOnlyList<Kingdom> checkedKingdomsList = null;
             PostfixMethods(harmony, "TaleWorlds.CampaignSystem", "CampaignObjectManager", "get_Kingdoms", delegate (object instance, ref object result, object[] parameters)
             {
@@ -133,39 +88,6 @@ namespace Debugger
             });
 
             #endregion TaleWorlds
-
-            #region PocColor
-
-            FinalizeMethods(harmony, "PocColor", "PocColorModAgentVisualsAddMeshes", "Postfix");
-
-            #endregion PocColor
-
-            #region Diplomacy
-
-            PrefixMethods(harmony, "Diplomacy.CivilWar.Actions", "StartRebellionAction", "Apply", delegate (object instance, ref object result, object[] parameters)
-            {
-                Clan clan = (Clan)parameters[0]?.GetType()?.GetCachedProperty("SponsorClan")?.GetValue(parameters[0]);
-                if (clan is null || clan.Kingdom is null || clan.Kingdom.RulingClan != clan) return false;
-                return true;
-            });
-
-            #endregion Diplomacy
-
-            #region SupplyLines
-
-            FinalizeMethods(harmony, "SupplyLines", "CaravansCampaignBehaviorPatch", "OnMapEventEndedPrefix");
-
-            #endregion SupplyLines
-
-            #region AllegianceOverhaul
-
-            FinalizeMethods(harmony, "AllegianceOverhaul.LoyaltyRebalance", "RelativesHelper", "BloodRelatives", delegate (object instance, ref object result, object[] parameters)
-            {
-                result = false;
-                return true;
-            });
-
-            #endregion AllegianceOverhaul
         }
     }
 }
