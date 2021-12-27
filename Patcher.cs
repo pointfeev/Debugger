@@ -33,8 +33,15 @@ namespace Debugger
                 if (!preventError)
                 {
                     int cost = 0;
-                    for (int i = 0; i < character.UpgradeTargets.Length; i++) cost += character.GetUpgradeXpCost(owner, i);
-                    if (cost == 0) preventError = true;
+                    for (int i = 0; i < character.UpgradeTargets.Length; i++)
+                    {
+                        cost += character.GetUpgradeXpCost(owner, i);
+                    }
+
+                    if (cost == 0)
+                    {
+                        preventError = true;
+                    }
                 }
                 if (preventError)
                 {
@@ -61,7 +68,11 @@ namespace Debugger
                     {
                         if (kingdom.Culture is null || kingdom.Leader is null)
                         {
-                            if (!kingdom.IsEliminated) DestroyKingdomAction.Apply(kingdom);
+                            if (!kingdom.IsEliminated)
+                            {
+                                DestroyKingdomAction.Apply(kingdom);
+                            }
+
                             CampaignObjectManager campaignObjectManager = Campaign.Current.CampaignObjectManager;
                             List<Kingdom> kingdoms = (List<Kingdom>)typeof(CampaignObjectManager).GetCachedField("_kingdoms").GetValue(campaignObjectManager);
                             kingdoms.Remove(kingdom);
@@ -82,7 +93,10 @@ namespace Debugger
                             i++;
                         }
                     }
-                    if (i > 0) OutputUtils.DoOutput($"Debugger just removed {i} invalid {(i == 1 ? "kingdom" : "kingdoms")} to prevent issues.");
+                    if (i > 0)
+                    {
+                        OutputUtils.DoOutput($"Debugger just removed {i} invalid {(i == 1 ? "kingdom" : "kingdoms")} to prevent issues.");
+                    }
                 }
                 return true;
             });

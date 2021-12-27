@@ -41,8 +41,16 @@ namespace Debugger
                 Equipment civilianEquipment = civilianEquipmentSets.Count > 0 ? civilianEquipmentSets[hero.RandomValueDeterministic % civilianEquipmentSets.Count] : null;
                 if (removeInvalid && (IsEquipmentInvalid(battleEquipment) || IsEquipmentInvalid(civilianEquipment)))
                 {
-                    if (!(battleEquipment is null) && IsEquipmentInvalid(battleEquipment)) battleEquipmentSets.Remove(battleEquipment);
-                    if (!(civilianEquipment is null) && IsEquipmentInvalid(civilianEquipment)) civilianEquipmentSets.Remove(civilianEquipment);
+                    if (!(battleEquipment is null) && IsEquipmentInvalid(battleEquipment))
+                    {
+                        battleEquipmentSets.Remove(battleEquipment);
+                    }
+
+                    if (!(civilianEquipment is null) && IsEquipmentInvalid(civilianEquipment))
+                    {
+                        civilianEquipmentSets.Remove(civilianEquipment);
+                    }
+
                     goto check_lists;
                 }
                 bool set = false;
@@ -56,7 +64,10 @@ namespace Debugger
                     typeof(Hero).GetProperty("CivilianEquipment", BindingFlags.Public | BindingFlags.Instance).SetMethod.Invoke(hero, new object[] { civilianEquipment.Clone() });
                     set = true;
                 }
-                if (set) return true;
+                if (set)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -105,14 +116,22 @@ namespace Debugger
                 List<MBEquipmentRoster> equipmentRosters = Game.Current.ObjectManager.GetObjectTypeList<MBEquipmentRoster>().ToList();
                 foreach (Hero hero in heroes)
                 {
-                    if (hero.CharacterObject is null) continue;
+                    if (hero.CharacterObject is null)
+                    {
+                        continue;
+                    }
+
                     equipmentRosters.Add((MBEquipmentRoster)typeof(BasicCharacterObject).GetField("_equipmentRoster", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(hero.CharacterObject));
                 }
                 int numEquipmentRemovedFromRosters = 0;
                 int numRostersRemoved = 0;
                 foreach (MBEquipmentRoster equipmentRoster in equipmentRosters)
                 {
-                    if (equipmentRoster is null) continue;
+                    if (equipmentRoster is null)
+                    {
+                        continue;
+                    }
+
                     int numEquipmentRemovedFromRoster = 0;
                     List<Equipment> equipments = (List<Equipment>)typeof(MBEquipmentRoster).GetField("_equipments", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(equipmentRoster);
                     for (int i = 1; i < equipments.Count; i++)
@@ -146,23 +165,26 @@ namespace Debugger
                             characterObject.AllEquipments.Where(t => !t.IsEmpty() && t.IsCivilian).ToList(),
                             true);
                     }
-                    else continue;
+                    else
+                    {
+                        continue;
+                    }
                     /*if (IsEquipmentInvalid(hero.BattleEquipment))
-                    {
-                        SetUniqueHeroEquipmentFromLists(hero,
-                            CharacterObject.ChildTemplates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).BattleEquipments.ToList(),
-                            CharacterObject.ChildTemplates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).CivilianEquipments.ToList(),
-                            true);
-                    }
-                    else { numFixed++; continue; }
-                    if (IsEquipmentInvalid(hero.BattleEquipment))
-                    {
-                        SetUniqueHeroEquipmentFromLists(hero,
-                            CharacterObject.Templates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).BattleEquipments.ToList(),
-                            CharacterObject.Templates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).CivilianEquipments.ToList(),
-                            true);
-                    }
-                    else { numFixed++; continue; }*/
+{
+   SetUniqueHeroEquipmentFromLists(hero,
+       CharacterObject.ChildTemplates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).BattleEquipments.ToList(),
+       CharacterObject.ChildTemplates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).CivilianEquipments.ToList(),
+       true);
+}
+else { numFixed++; continue; }
+if (IsEquipmentInvalid(hero.BattleEquipment))
+{
+   SetUniqueHeroEquipmentFromLists(hero,
+       CharacterObject.Templates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).BattleEquipments.ToList(),
+       CharacterObject.Templates.GetRandomElementWithPredicate(t => t.Culture == hero.Culture && t.IsFemale == hero.IsFemale).CivilianEquipments.ToList(),
+       true);
+}
+else { numFixed++; continue; }*/
                     if (IsEquipmentInvalid(hero.BattleEquipment))
                     {
                         numCantFix++;

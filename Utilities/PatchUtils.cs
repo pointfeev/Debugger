@@ -21,24 +21,54 @@ namespace Debugger
                 foreach (MethodInfo method in methods)
                 {
                     string methodToUse = patchType;
-                    if (method.ReturnType != typeof(void)) methodToUse += "WithReturn";
-                    if (!(patchDelegate is null)) MethodDelegate[method] = patchDelegate;
+                    if (method.ReturnType != typeof(void))
+                    {
+                        methodToUse += "WithReturn";
+                    }
+
+                    if (!(patchDelegate is null))
+                    {
+                        MethodDelegate[method] = patchDelegate;
+                    }
+
                     int parameters = method.GetParameters().Count();
-                    if (parameters > 0) methodToUse += $"With{parameters}Parameters";
+                    if (parameters > 0)
+                    {
+                        methodToUse += $"With{parameters}Parameters";
+                    }
+
                     try
                     {
-                        if (patchType == "Prefix") harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
-                        else if (patchType == "Postfix") harmony.Patch(method, postfix: new HarmonyMethod(AccessTools.Method(typeof(Postfixes), methodToUse)));
-                        else if (patchType == "Finalizer") harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
+                        if (patchType == "Prefix")
+                        {
+                            harmony.Patch(method, prefix: new HarmonyMethod(AccessTools.Method(typeof(Prefixes), methodToUse)));
+                        }
+                        else if (patchType == "Postfix")
+                        {
+                            harmony.Patch(method, postfix: new HarmonyMethod(AccessTools.Method(typeof(Postfixes), methodToUse)));
+                        }
+                        else if (patchType == "Finalizer")
+                        {
+                            harmony.Patch(method, finalizer: new HarmonyMethod(AccessTools.Method(typeof(Finalizers), methodToUse)));
+                        }
                     }
                     catch { }
                 }
                 string rootNameSpace = nameSpace;
                 int nameSpaceSub = rootNameSpace.IndexOf('.');
-                if (nameSpaceSub != -1) rootNameSpace = rootNameSpace.Substring(0, nameSpaceSub);
+                if (nameSpaceSub != -1)
+                {
+                    rootNameSpace = rootNameSpace.Substring(0, nameSpaceSub);
+                }
                 //if (rootNameSpace == "SandBox") rootNameSpace = "TaleWorlds";
-                if (MethodsPatched.TryGetValue(rootNameSpace, out int i)) MethodsPatched[rootNameSpace] = i + methods.Count;
-                else MethodsPatched[rootNameSpace] = methods.Count;
+                if (MethodsPatched.TryGetValue(rootNameSpace, out int i))
+                {
+                    MethodsPatched[rootNameSpace] = i + methods.Count;
+                }
+                else
+                {
+                    MethodsPatched[rootNameSpace] = methods.Count;
+                }
             }
         }
 
@@ -94,7 +124,11 @@ namespace Debugger
             List<MethodInfo> methods = new List<MethodInfo>();
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().Reverse())
             {
-                if (assembly == typeof(SubModule).Assembly) continue;
+                if (assembly == typeof(SubModule).Assembly)
+                {
+                    continue;
+                }
+
                 foreach (Type type in assembly.GetTypes().Reverse())
                 {
                     bool canUseNamespace = (modNamespaceOnly ? (modNamespaceExplicit ? type.Namespace == nameSpace : type.Namespace?.Contains(nameSpace)) : true).GetValueOrDefault(false);

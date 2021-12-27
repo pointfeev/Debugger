@@ -10,7 +10,11 @@ namespace Debugger
             if (MethodDelegate.TryGetValue(originalMethod, out AllPurposePatchDelegate @delegate))
             {
                 bool ret = @delegate.Invoke(instance, ref result, parameters);
-                if (!ret) OutputUtils.DoOutputForMethod(originalMethod);
+                if (!ret)
+                {
+                    OutputUtils.DoOutputForMethod(originalMethod);
+                }
+
                 return ret;
             }
             return true;
