@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -25,12 +26,9 @@ namespace Debugger
             try { Game.Current.ObjectManager.LoadXML("EquipmentSet"); } catch { }
         }
 
-        private static bool IsEquipmentInvalid(Equipment equipment)
-        {
-            return equipment is null || !equipment.IsValid ||
+        private static bool IsEquipmentInvalid(Equipment equipment) => equipment is null || !equipment.IsValid ||
                 equipment.GetEquipmentFromSlot(EquipmentIndex.Body).IsEmpty ||
                 equipment.GetEquipmentFromSlot(EquipmentIndex.Body).IsVisualEmpty;
-        }
 
         private static bool SetUniqueHeroEquipmentFromLists(Hero hero, List<Equipment> battleEquipmentSets, List<Equipment> civilianEquipmentSets, bool removeInvalid = false)
         {

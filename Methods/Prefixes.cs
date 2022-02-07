@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+
 using static Debugger.PatchUtils;
 
 namespace Debugger
@@ -80,54 +81,24 @@ namespace Debugger
             return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6, __7, __8);
         }
 
-        internal static bool PrefixWithReturn(MethodBase __originalMethod, object __instance, ref object __result)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result);
-        }
+        internal static bool PrefixWithReturn(MethodBase __originalMethod, object __instance, ref object __result) => DoPrefix(__originalMethod, __instance, ref __result);
 
-        internal static bool PrefixWithReturnWith1Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0);
-        }
+        internal static bool PrefixWithReturnWith1Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0) => DoPrefix(__originalMethod, __instance, ref __result, __0);
 
-        internal static bool PrefixWithReturnWith2Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1);
-        }
+        internal static bool PrefixWithReturnWith2Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1);
 
-        internal static bool PrefixWithReturnWith3Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2);
-        }
+        internal static bool PrefixWithReturnWith3Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2);
 
-        internal static bool PrefixWithReturnWith4Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3);
-        }
+        internal static bool PrefixWithReturnWith4Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3);
 
-        internal static bool PrefixWithReturnWith5Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4);
-        }
+        internal static bool PrefixWithReturnWith5Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4);
 
-        internal static bool PrefixWithReturnWith6Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5);
-        }
+        internal static bool PrefixWithReturnWith6Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5);
 
-        internal static bool PrefixWithReturnWith7Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6);
-        }
+        internal static bool PrefixWithReturnWith7Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6);
 
-        internal static bool PrefixWithReturnWith8Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6, object __7)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6, __7);
-        }
+        internal static bool PrefixWithReturnWith8Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6, object __7) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6, __7);
 
-        internal static bool PrefixWithReturnWith9Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6, object __7, object __8)
-        {
-            return DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6, __7, __8);
-        }
+        internal static bool PrefixWithReturnWith9Parameters(MethodBase __originalMethod, object __instance, ref object __result, object __0, object __1, object __2, object __3, object __4, object __5, object __6, object __7, object __8) => DoPrefix(__originalMethod, __instance, ref __result, __0, __1, __2, __3, __4, __5, __6, __7, __8);
     }
 }

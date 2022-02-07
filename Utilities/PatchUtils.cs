@@ -1,8 +1,9 @@
-﻿using HarmonyLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
+using HarmonyLib;
 
 namespace Debugger
 {
@@ -72,14 +73,9 @@ namespace Debugger
             }
         }
 
-        internal static string GetUniqueMethodString(MethodBase method)
-        {
-            return method.ReflectedType.FullName + "." + method.Name + "(" + string.Join(", ", method.GetParameters().ToList()) + ")";
-        }
+        internal static string GetUniqueMethodString(MethodBase method) => method.ReflectedType.FullName + "." + method.Name + "(" + string.Join(", ", method.GetParameters().ToList()) + ")";
 
-        internal static void PrefixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate prefix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            PatchMethods("Prefix",
+        internal static void PrefixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate prefix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true) => PatchMethods("Prefix",
                 harmony: harmony,
                 nameSpace: nameSpace,
                 typeName: typeName,
@@ -89,11 +85,8 @@ namespace Debugger
                 modNamespaceExplicit: modNamespaceExplicit,
                 typeNameExplicit: typeNameExplicit,
                 methodNameExplicit: methodNameExplicit);
-        }
 
-        internal static void PostfixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate postfix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            PatchMethods("Postfix",
+        internal static void PostfixMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate postfix, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true) => PatchMethods("Postfix",
                 harmony: harmony,
                 nameSpace: nameSpace,
                 typeName: typeName,
@@ -103,11 +96,8 @@ namespace Debugger
                 modNamespaceExplicit: modNamespaceExplicit,
                 typeNameExplicit: typeNameExplicit,
                 methodNameExplicit: methodNameExplicit);
-        }
 
-        internal static void FinalizeMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate fallback = null, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
-        {
-            PatchMethods("Finalizer",
+        internal static void FinalizeMethods(Harmony harmony, string nameSpace, string typeName, string methodName, AllPurposePatchDelegate fallback = null, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true) => PatchMethods("Finalizer",
                 harmony: harmony,
                 nameSpace: nameSpace,
                 typeName: typeName,
@@ -117,7 +107,6 @@ namespace Debugger
                 modNamespaceExplicit: modNamespaceExplicit,
                 typeNameExplicit: typeNameExplicit,
                 methodNameExplicit: methodNameExplicit);
-        }
 
         private static List<MethodInfo> GetMethods(string nameSpace, string typeName, string methodName, bool modNamespaceOnly = true, bool modNamespaceExplicit = true, bool typeNameExplicit = true, bool methodNameExplicit = true)
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
+
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -21,9 +22,6 @@ namespace Debugger
             }
         }
 
-        internal static void DoOutputForMethod(MethodBase method, bool allowRepeat = false)
-        {
-            DoOutput("Debugger just prevented issues at " + method.ReflectedType.FullName + "." + method.Name, allowRepeat);
-        }
+        internal static void DoOutputForMethod(MethodBase method, bool allowRepeat = false) => DoOutput("Debugger just prevented issues at " + method.ReflectedType.FullName + "." + method.Name, allowRepeat);
     }
 }
